@@ -1,5 +1,7 @@
 <?php
-//TODO index
+require_once "Database.php";
+
+$conn = (new Database())->getConnection();
 
 ?>
 <!doctype html>
@@ -10,10 +12,10 @@
     <meta name="author" content="Richterova">
     <!-- favicon
 		============================================ -->
-    <link rel="icon" type="image/png" href="img/medal.png">
+    <link rel="icon" type="image/png" href="">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
 
-    <link rel="stylesheet" type="text/css" href="css/default.css">
+<!--    <link rel="stylesheet" type="text/css" href="css/default.css">-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <title>Dochádzka</title>
 </head>
@@ -89,7 +91,7 @@
 <script>
 
 </script>
-<script src="js/indexJS.js"></script>
+<script src="js/javascript.js"></script>
 
 </body>
 </html>

@@ -44,10 +44,7 @@ foreach ($array as $item){
             $stmt = $conn->query($query);
             downloadToDb($conn, $conn->lastInsertId(), $item->download_url);
             array_push($db_lectures, $item->name);
-        }else{
-            //je to v DB, vsetko ok
         }
-        //array_push($repo_lectures, [$item->name, $item->download_url]);
         array_push($repo_lectures, $item->name);
     }
 }
@@ -85,23 +82,8 @@ function downloadToDb($conn, $lecture_id, $url){
         if ($index > 0 && $index < (sizeof($lines) - 1)){
             $lineArray = str_getcsv($line, "\t");
 
-
-
-            $full_name = $lineArray[0];
-            $nameArray = explode(" ", $full_name);
-            if (sizeof($nameArray) > 2){
-                $name = "";
-                foreach ($nameArray as $nameIndex => $part){
-                    if($nameIndex != sizeof($nameArray) - 1){
-                        $name .= $part . " ";
-                    }
-                }
-                $name = substr($name, 0, -1);
-            }else{
-                $name = $nameArray[0];
-            }
-            $surname = $nameArray[sizeof($nameArray) - 1];
-
+            $name = getName($lineArray[0]);
+            $surname = getSurname($lineArray[0]);
             $action = $lineArray[1];
             $timestamp = getTimestamp($lineArray[2]);
 
@@ -117,21 +99,31 @@ function downloadToDb($conn, $lecture_id, $url){
     return $csv;
 }
 
+function getName($full_name){
+    $nameArray = explode(" ", $full_name);
+    if (sizeof($nameArray) > 2){
+        $name = "";
+        foreach ($nameArray as $nameIndex => $part){
+            if($nameIndex != sizeof($nameArray) - 1){
+                $name .= $part . " ";
+            }
+        }
+        $name = substr($name, 0, -1);
+    }else{
+        $name = $nameArray[0];
+    }
+    return $name;
+}
+
+function getSurname($full_name){
+    $nameArray = explode(" ", $full_name);
+    return $nameArray[sizeof($nameArray) - 1];
+}
+
 function getTimestamp($date){
     $dateSplit = explode(" ",$date);
     $correctDate = $dateSplit[0] . $dateSplit[1];
     return date("Y-m-d H:i:s",date_create_from_format('d/m/Y,H:i:s',$correctDate)->getTimestamp());
 }
 
-?>
-<!DOCTYPE html>
-<html lang="sk">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<script>
-</script>
-</body>
-</html>
+echo json_encode(["status" => "success", "msg" => "added"]);
