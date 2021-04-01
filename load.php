@@ -26,52 +26,44 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
     foreach ($lectures as $lecture){
         $stmt2 = $conn->query("SELECT user_actions.action, user_actions.timestamp FROM user_actions WHERE user_actions.name='".$name."' AND user_actions.surname='".$surname."' AND user_actions.lecture_id=".$lecture[0].";");
-
         $lesson = [];
-        while($entry = $stmt2->fetch(PDO::FETCH_ASSOC))
-        {
+        while($entry = $stmt2->fetch(PDO::FETCH_ASSOC)) {
             array_push($lesson, [$entry["action"],  $entry["timestamp"]]);
         }
 
         if (count($lesson) > 0 ){
-            array_push($minutes_field, getLectureMinutes($lesson, $lecture[1]));
+            array_push($minutes_field, getLectureMinutes($lesson, $lecture[1], $lecture[0]));
         }else{
-            array_push($minutes_field, 0);
+            array_push($minutes_field, [0, null, $lecture[0]]);
         }
     }
 
-    $line = [$surname . " " . $name];
-
-    foreach ($minutes_field as $minute_record){
-        array_push($line, $minute_record);
-    }
-    array_push($line, attendanceCount($minutes_field), minutesCount($minutes_field));
-//    console_log($line);
-    array_push($people, $line);
-
+    array_push($people, [$surname . " " . $name, $minutes_field, attendanceCount($minutes_field), minutesCount($minutes_field)]);
 }
 
-function getLectureMinutes($lesson, $max_time){
+
+function getLectureMinutes($lesson, $max_time, $lecture_id){
 
     $total_minutes = 0;
-
+    $warning = null;
     if(count($lesson) % 2 == 1){
         array_push($lesson, ["Left", $max_time]);
+        $warning = "red";
     }
-    for ($i = 0; $i < count($lesson); $i = $i+2){
+    for ($i = 0; $i < count($lesson); $i = $i+2) {
         $joined = new DateTime($lesson[$i][1]);
         $left = new DateTime($lesson[$i + 1][1]);
-        $interval  = $joined->diff($left);
-        $total_minutes += $interval->i + ($interval->h * 60) ;
-
+        $interval = $joined->diff($left);
+        $total_minutes += $interval->i + ($interval->h * 60);
     }
-    return $total_minutes;
+    return [$total_minutes, $warning, $lecture_id];
 }
 
 function attendanceCount($field){
+
     $attendance = 0;
     foreach ($field as $record){
-        if($record > 0){
+        if($record[0] > 0){
             $attendance++;
         }
     }
@@ -81,7 +73,7 @@ function attendanceCount($field){
 function minutesCount($field){
     $total_minutes = 0;
     foreach ($field as $record){
-        $total_minutes += $record;
+        $total_minutes += $record[0];
     }
     return $total_minutes;
 }
