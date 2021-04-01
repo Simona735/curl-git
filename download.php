@@ -50,8 +50,6 @@ foreach ($array as $item){
 }
 
 if (count($repo_lectures) != count($db_lectures)){
-    var_dump("repo count " .count($repo_lectures));
-    var_dump("db count " .count($db_lectures));
     foreach ($db_lectures as $item){
         if (!in_array($item, $repo_lectures)) {
             $stmt = $conn->query("SELECT id FROM lecture WHERE filename='".$item."';");
